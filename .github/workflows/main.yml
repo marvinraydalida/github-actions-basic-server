@@ -57,12 +57,12 @@ jobs:
     environment: Production
     steps:
       - name: Pull image from docker hub
-      run: docker pull marvinraydalida/github-actions-basic-server:latest
+        run: docker pull marvinraydalida/github-actions-basic-server:latest
       - name: Delete old container
-      run: docker rm -f github-actions-basic-server-container
+        run: docker rm -f github-actions-basic-server-container
       - name: Create and run new docker container
-      run: |
-        docker run -d -p 8000:3000 --name github-actions-basic-server-container marvinraydalida/github-actions-basic-server
+        run: |
+          docker run -d -p 8000:3000 --name github-actions-basic-server-container marvinraydalida/github-actions-basic-server
 
   deploy-development:
     # THIS JOB WILL NOT TRIGGER UNTIL BUILD IS DONE
@@ -74,9 +74,9 @@ jobs:
     environment: Development
     steps:
       - name: Pull image from docker hub
-      run: docker pull marvinraydalida/github-actions-basic-server:latest
+        run: docker pull marvinraydalida/github-actions-basic-server:latest
       - name: Delete old container
-      run: docker rm -f github-actions-basic-server-container
+        run: docker rm -f github-actions-basic-server-container
       - name: Create and run new docker container
-      run: |
-        docker run -d -p 8000:3000 --name github-actions-basic-server-container marvinraydalida/github-actions-basic-server
+        run: |
+          docker run -d -p 8000:3000 --name github-actions-basic-server-container marvinraydalida/github-actions-basic-server
