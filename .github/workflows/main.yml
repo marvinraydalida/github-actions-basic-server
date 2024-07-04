@@ -39,10 +39,44 @@ jobs:
           docker build -t marvinraydalida/github-actions-basic-server:${{ env.VERSION }} .
           docker build -t marvinraydalida/github-actions-basic-server:latest .
           
-      - name: Login to Docker Hub
+      - name: Authenticate to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Publish Image to Docker Hub
         run: |
           docker push marvinraydalida/github-actions-basic-server:${{ env.VERSION }}
           docker push marvinraydalida/github-actions-basic-server:latest
+
+  deploy-production:
+    # THIS JOB WILL NOT TRIGGER UNTIL BUILD IS DONE
+    needs: build
+    # JOB WILL CONTINUE IF PUSHING TO MAIN BRANCH
+    if: github.ref == 'refs/heads/main'
+    # A SELF HOSTED RUNNER THAT MATCHES ALL LABELS WILL BE ELIGIBLE TO RUN THE JOB
+    runs-on: [self-hosted, linux, X64, production]
+    environment: Production
+    steps:
+      - name: Pull image from docker hub
+      run: docker pull marvinraydalida/github-actions-basic-server:latest
+      - name: Delete old container
+      run: docker rm -f github-actions-basic-server-container
+      - name: Create and run new docker container
+      run: |
+        docker run -d -p 8000:3000 --name github-actions-basic-server-container marvinraydalida/github-actions-basic-server
+
+  deploy-development:
+    # THIS JOB WILL NOT TRIGGER UNTIL BUILD IS DONE
+    needs: build
+    # JOB WILL CONTINUE IF PUSHING TO DEV BRANCH
+    if: github.ref == 'refs/heads/dev'
+    # A SELF HOSTED RUNNER THAT MATCHES ALL LABELS WILL BE ELIGIBLE TO RUN THE JOB
+    runs-on: [self-hosted, linux, X64, development]
+    environment: Development
+    steps:
+      - name: Pull image from docker hub
+      run: docker pull marvinraydalida/github-actions-basic-server:latest
+      - name: Delete old container
+      run: docker rm -f github-actions-basic-server-container
+      - name: Create and run new docker container
+      run: |
+        docker run -d -p 8000:3000 --name github-actions-basic-server-container marvinraydalida/github-actions-basic-server
